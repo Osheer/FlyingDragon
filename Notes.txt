@@ -1,0 +1,4 @@
+>get logo
+>fix links
+>make randomized enemy spawn from the start
+
