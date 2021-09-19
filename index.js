@@ -4466,7 +4466,7 @@ ig.module("game.entities.game-control")
                         b.fillStyle = "#FFFFFF";
                         b.fillText("TAP TO FLY!", 280, 300);
                     } else {
-                        b.fillStyle = "#c72020";
+                        b.fillStyle = "#FFFFFF";
                         b.fillText("TAP TO TRY AGAIN", 280, 300);
                     }
                 } else {
@@ -4475,7 +4475,7 @@ ig.module("game.entities.game-control")
                         b.fillStyle = "#FFFFFF";
                         b.fillText("TAP TO FLY!", 450, 200);
                     } else {
-                        b.fillStyle = "#c72020";
+                        b.fillStyle = "#FFFFFF";
                         b.fillText("TAP TO TRY AGAIN", 450, 200);
                     }
                 }
