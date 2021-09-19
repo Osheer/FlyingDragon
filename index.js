@@ -54,30 +54,42 @@ var spriteSheets = {
 //game control variables
 var gameStart = 0;  //signals game start
 
-var turn = 0; //controls the sequence
-
 //Dragon Co-ordintates
+    //Portrait
 var playerX = 70;
 var playerY = 450;
 
+    //Landscape
 var playerLX = 100;
 var playerLY = 200;
 
 
 //Enemy Co-ordinates
+    //Portrait
 var enemyX = 1000;
-var enemyY = 400;
+var enemyY = 350;
 
+    //Landscape
 var enemyLX = 2000;
-var enemyLY = 200;
+var enemyLY = 300;
 
+//Triggers
 var playerTrigger = 0;
 var deathTrigger = 0;
 
+//Animation Controllers
 var dragonAnim = 0;
 var enemyAnim = 0;
 
+//controls state of the game
 var gameState = 0;
+
+//Score
+var displayScore = 0;
+var totalScore = 0;
+
+var scoreTrigger = 0;
+var scoreUpdate;
 
 var Vector2 = function (b, c) {
     this.x = b;
@@ -4188,6 +4200,8 @@ ig.module("game.entities.game-control")
                     zIndex: 1
                 });
 
+                
+
             },
             updateOnOrientationChange: function () {
                 if (MJS.view.viewport.orientation.portrait) {
@@ -4294,7 +4308,6 @@ ig.module("game.entities.game-control")
                     this.drawBG();
                     //this.anim1.draw(playerX, playerY);
                     this.drawDragon();
-
                     if (gameState == 2) {
                         this.drawGameOver();
                         this.drawLogoEnd();
@@ -4310,7 +4323,10 @@ ig.module("game.entities.game-control")
                     } else {
                         this.addHandPointerPortrait.visible = 0;
                         this.addHandPointerLandscape.visible = 0;
-                        this.drawEnemyDragon();
+                        if(gameState !== 2){
+                            this.drawEnemyDragon();
+                            this.drawScore();
+                        }
                     }
 
 
@@ -4423,22 +4439,48 @@ ig.module("game.entities.game-control")
 
             },
 
-            drawTapInstruction: function () {
+            drawScore: function() {
+                var b = ig.system.context;
+                b.save();
+                b.textAlign = "center";
+                b.textBaseline = "top";
+                b.font = "bold 28px arial";
+                b.fillStyle = "#FFFFFF";
+                if (MJS.view.viewport.orientation.portrait){
+                    b.fillText(`Score: ${totalScore} `, 450, 20);
+                } else {
+                    b.fillText(`Score: ${totalScore}`, 850, 20 );
+                }
+            },
 
+            drawTapInstruction: function () {
                 var b = ig.system.context;
                 b.save();
                 //b.translate(100, 100);
-                b.fillStyle = "#FFFFFF";
+                
                 b.textAlign = "center";
                 b.textBaseline = "top";
                 if (MJS.view.viewport.orientation.portrait) {
                     b.font = "bold 45px arial";
-                    b.fillText("TAP ANYWHERE!", 280, 300);
+                    if(deathTrigger == 0){
+                        b.fillStyle = "#FFFFFF";
+                        b.fillText("TAP TO FLY!", 280, 300);
+                    } else {
+                        b.fillStyle = "#c72020";
+                        b.fillText("TAP TO TRY AGAIN", 280, 300);
+                    }
                 } else {
                     b.font = "bold 45px arial";
-                    b.fillText("TAP ANYWHERE!", 450, 200);
+                    if(deathTrigger == 0){
+                        b.fillStyle = "#FFFFFF";
+                        b.fillText("TAP TO FLY!", 450, 200);
+                    } else {
+                        b.fillStyle = "#c72020";
+                        b.fillText("TAP TO TRY AGAIN", 450, 200);
+                    }
                 }
             },
+
 
             drawDragon: function () {
                 if (MJS.view.viewport.orientation.portrait) {
@@ -4503,7 +4545,7 @@ ig.module("game.entities.game-control")
                     var b = ig.system.context;
                     b.save();
                     b.translate(enemyX, enemyY);
-                    b.scale(0.65, 0.65);
+                    b.scale(0.55, 0.55);
                     if (enemyAnim == 0) {
                         this.imgEnemy1.draw(0, 0);
                         setTimeout(() => { enemyAnim = 1 }, 100);
@@ -4528,7 +4570,7 @@ ig.module("game.entities.game-control")
                     var b = ig.system.context;
                     b.save();
                     b.translate(enemyLX, enemyLY);
-                    b.scale(0.65, 0.65);
+                    b.scale(0.55, 0.55);
                     if (enemyAnim == 0) {
                         this.imgEnemy1.draw(0, 0);
                         setTimeout(() => { enemyAnim = 1 }, 100);
@@ -4580,7 +4622,6 @@ ig.module("game.entities.game-control")
                 b.restore();
             },
             drawGameOver: function () {
-
                 var b = ig.system.context;
                 b.save();
                 b.translate(-150, 0);
@@ -4596,6 +4637,14 @@ ig.module("game.entities.game-control")
                     this.imgGameOverText.draw(0, 0);
                     b.restore();
 
+                    b = ig.system.context;
+                    b.save();
+                    b.textAlign = "center";
+                    b.textBaseline = "top";
+                    b.font = "bold 45px arial";
+                    b.fillStyle = "#e8a915"
+                    b.fillText(`Score: ${displayScore}`, 270, 150);
+
                 } else {
                     var b = ig.system.context;
                     b.save();
@@ -4603,6 +4652,14 @@ ig.module("game.entities.game-control")
                     b.scale(1, 1);
                     this.imgGameOverText.draw(0, 0);
                     b.restore();
+
+                    b = ig.system.context;
+                    b.save();
+                    b.textAlign = "center";
+                    b.textBaseline = "top";
+                    b.font = "bold 45px arial";
+                    b.fillStyle = "#e8a915"
+                    b.fillText(`Score: ${displayScore}`, 470, 300);
                 }
                 if (!this.buttonFeed.visible) {
                     this.showButtonFeed();
@@ -4635,8 +4692,8 @@ ig.module("game.entities.game-control")
                     //this.updatePointer();
                     // this.collision();
                     //this.dragonCollider();
-
-
+                    
+                    console.log(scoreTrigger);
                     this.detectPointer();
                     this.checkTap();
                     if (gameState == 1) {
@@ -4644,6 +4701,7 @@ ig.module("game.entities.game-control")
                         this.jumpTap();
                         this.spawnEnemy();
                         this.collisionCheck();
+                        //this.updateScore();
                     }
 
 
@@ -4669,6 +4727,18 @@ ig.module("game.entities.game-control")
                     this.checkTap();
             },
 
+            updateScore: function () {
+                
+                if(scoreTrigger == 1) {
+                    scoreUpdate = setInterval (() => { totalScore += 1, displayScore += 1 }, 1000);
+                }
+                if (scoreTrigger == 2) {
+                    clearInterval(scoreUpdate);
+                    totalScore = 0;
+                }
+                
+            },
+
             //Fall function
             dragonGravity: function () {
                 if (deathTrigger == 0) {
@@ -4690,14 +4760,14 @@ ig.module("game.entities.game-control")
                     if (enemyX <= 0) {
                         var newY = this.getRandomIntInclusive(-10, 750);
 
-                        setTimeout(() => { enemyX = 1000, enemyY = newY }, this.getRandomIntInclusive(1000, 4000));
+                        setTimeout(() => { enemyX = 1000, enemyY = newY }, this.getRandomIntInclusive(250, 1250));
                     }
                 } else {
                     enemyLX -= 12; // Dragon coming from the right
                     if (enemyLX <= 0) {
                         var newLY = this.getRandomIntInclusive(-10, 350);
 
-                        setTimeout(() => { enemyLX = 2000, enemyLY = newLY }, this.getRandomIntInclusive(1000, 4000));
+                        setTimeout(() => { enemyLX = 2000, enemyLY = newLY }, this.getRandomIntInclusive(250, 1250));
                     }
                 }
 
@@ -4714,9 +4784,17 @@ ig.module("game.entities.game-control")
             checkTap: function () {
                 if (this.pointer.isFirstPressed && gameState == 0) {
                     gameState = 1;
+                    if(deathTrigger !== 1){
+                        scoreTrigger = 1;
+                        this.updateScore();
+                    }
+                    //setTimeout(() => {totalScore += 1}, 1000);
+                    // scoreCount = setInterval(()=> {totalScore += 1}, 1000);
+                    
                 }
                 if (this.pointer.isFirstPressed && (gameState == 1) && (deathTrigger == 1)) {
                     gameState = 2;
+                    //clearInterval(scoreCount);
                 }
             },
 
@@ -4726,17 +4804,27 @@ ig.module("game.entities.game-control")
                     if (this.pointer.isFirstPressed && deathTrigger == 0) {
                         // console.log("JUMP TAP");
                         // console.log(ig.input.mouse.y);
+
                         //jump
-                        playerY -= 150;
                         playerX += 7;
+                        if(playerY >= 150){
+                            playerY -= 150;
+                        } else {
+                            playerY -= (playerY + playerY/6);
+                        }
+                        
 
                     }
                 } else {
                     if (this.pointer.isFirstPressed && deathTrigger == 0) {
                         //jump
                         // console.log(ig.input.mouse.y);
-                        playerLY -= 120;
                         playerLX += 7;
+                        if(playerLY >= 120){
+                            playerLY -= 120;
+                        } else {
+                            playerLY -= (playerLY + playerY/6);
+                        }
                     }
                 }
             },
@@ -4814,10 +4902,10 @@ ig.module("game.entities.game-control")
 
 
                 //Enemy Co-ordinates
-                enemyX = 1000;
+                enemyX = 300;
                 enemyY = 400;
 
-                enemyLX = 2000;
+                enemyLX = 500;
                 enemyLY = 200;
             },
 
@@ -4827,10 +4915,10 @@ ig.module("game.entities.game-control")
                     //----------------PORTRAIT---------------------
 
                     //enemy box
-                    var enemyX1 = (enemyX - (60 / 300 * enemyX)) * window.innerWidth / 375;
-                    var enemyX2 = (enemyX1 + 100) * window.innerWidth / 375;
+                    var enemyX1 = (enemyX - (70 / 300 * enemyX)) * window.innerWidth / 375;
+                    var enemyX2 = (enemyX1 + 80) * window.innerWidth / 375;
                     var enemyY1 = ((enemyY + (150 / 550 * (enemyY + 150))) - (200 / 400 * enemyY)) * window.innerHeight / 667;
-                    var enemyY2 = (enemyY1 + 100) * window.innerHeight / 667;
+                    var enemyY2 = (enemyY1 + 60) * window.innerHeight / 667;
 
                     //player box
                     var playerX1 = playerX - 50;
@@ -4845,6 +4933,8 @@ ig.module("game.entities.game-control")
                     if (playerY2 >= mHeight) {
                         deathTrigger = 1;
                         this.resetGame();
+                        scoreTrigger = 2;
+                        this.updateScore();
                         console.log("Mountain Collision");
                     }
 
@@ -4863,6 +4953,8 @@ ig.module("game.entities.game-control")
                             console.log("COLLISION DETECTED");
                             deathTrigger = 1;
                             this.resetGame();
+                            scoreTrigger = 2;
+                            this.updateScore();
                         }
                     }
                 } else {
@@ -4870,9 +4962,9 @@ ig.module("game.entities.game-control")
 
                     //enemy box
                     var enemyX1 = (enemyLX - 70 / 300 * enemyLX) * window.innerWidth / 667;
-                    var enemyX2 = (enemyX1 + 110) * window.innerWidth / 667;
+                    var enemyX2 = (enemyX1 + 80) * window.innerWidth / 667;
                     var enemyY1 = (enemyLY + (150 / 350 * (enemyLY + 150))) - (140 / 200 * enemyLY);
-                    var enemyY2 = enemyY1 + 80;
+                    var enemyY2 = enemyY1 + 50;
 
                     //player box
                     var playerX1 = playerLX - 30;
@@ -4889,6 +4981,8 @@ ig.module("game.entities.game-control")
                         deathTrigger = 1;
                         this.resetGame();
                         console.log("Mountain Collision");
+                        scoreTrigger = 2;
+                        this.updateScore();
                     }
 
 
@@ -4906,6 +5000,8 @@ ig.module("game.entities.game-control")
                             console.log("COLLISION DETECTED");
                             deathTrigger = 1;
                             this.resetGame();
+                            scoreTrigger = 2;
+                            this.updateScore();
                         }
                     }
 
@@ -4994,9 +5090,9 @@ ig.module("game.main")
                     for (var b = 0; b < this.entities.length; b++) this.entities[b].ignorePause && this.entities[b].update();
                     this.checkEntities();
                     if (this._doSortEntities || this.autoSort) this.sortEntities(), (this._doSortEntities = !1);
+                    
                 } else {
                     this.parent();
-
 
                 }
             },
