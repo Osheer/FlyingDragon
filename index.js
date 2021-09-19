@@ -4693,7 +4693,6 @@ ig.module("game.entities.game-control")
                     // this.collision();
                     //this.dragonCollider();
                     
-                    console.log(scoreTrigger);
                     this.detectPointer();
                     this.checkTap();
                     if (gameState == 1) {
@@ -4760,14 +4759,14 @@ ig.module("game.entities.game-control")
                     if (enemyX <= 0) {
                         var newY = this.getRandomIntInclusive(-10, 750);
 
-                        setTimeout(() => { enemyX = 1000, enemyY = newY }, this.getRandomIntInclusive(250, 1250));
+                        setTimeout(() => { enemyX = 1000, enemyY = newY }, this.getRandomIntInclusive(250, 1050));
                     }
                 } else {
                     enemyLX -= 12; // Dragon coming from the right
                     if (enemyLX <= 0) {
                         var newLY = this.getRandomIntInclusive(-10, 350);
 
-                        setTimeout(() => { enemyLX = 2000, enemyLY = newLY }, this.getRandomIntInclusive(250, 1250));
+                        setTimeout(() => { enemyLX = 2000, enemyLY = newLY }, this.getRandomIntInclusive(250, 1050));
                     }
                 }
 
