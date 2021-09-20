@@ -91,6 +91,9 @@ var totalScore = 0;
 var scoreTrigger = 0;
 var scoreUpdate;
 
+//jump
+var jumpCount = 0;
+
 var Vector2 = function (b, c) {
     this.x = b;
     this.y = c;
@@ -4698,7 +4701,7 @@ ig.module("game.entities.game-control")
                     if (gameState == 1) {
                         this.dragonGravity();
                         this.jumpTap();
-                        this.spawnEnemy();
+                        //this.spawnEnemy();
                         this.collisionCheck();
                         //this.updateScore();
                     }
@@ -4800,17 +4803,22 @@ ig.module("game.entities.game-control")
             //Jump function
             jumpTap: function () {
                 if (MJS.view.viewport.orientation.portrait) {
-                    if (this.pointer.isFirstPressed && deathTrigger == 0) {
+                    
+                    if (this.pointer.isFirstPressed && deathTrigger == 0 && gameState != 0) {
                         // console.log("JUMP TAP");
                         // console.log(ig.input.mouse.y);
 
                         //jump
-                        playerX += 7;
-                        if(playerY >= 150){
-                            playerY -= 150;
-                        } else {
-                            playerY -= (playerY + playerY/6);
+                        jumpCount += 1;
+                        if(playerY >= 140*jumpCount){
+                            setTimeout(() => { console.log(jumpCount); playerX += 7; playerY -= 140*jumpCount; jumpCount = 0; }, 265);
+                        //     playerY -= 150;
+                         } else {
+                            setTimeout(() => { console.log(jumpCount); playerX += 7; playerY -= (playerY + playerY/6); jumpCount = 0; }, 265);
+                            //playerY -= (playerY + playerY/6);
                         }
+
+                        
                         
 
                     }
@@ -4818,11 +4826,20 @@ ig.module("game.entities.game-control")
                     if (this.pointer.isFirstPressed && deathTrigger == 0) {
                         //jump
                         // console.log(ig.input.mouse.y);
-                        playerLX += 7;
-                        if(playerLY >= 120){
-                            playerLY -= 120;
-                        } else {
-                            playerLY -= (playerLY + playerY/6);
+                        // playerLX += 7;
+                        // if(playerLY >= 120){
+                        //     playerLY -= 120;
+                        // } else {
+                        //     playerLY -= (playerLY + playerY/6);
+                        // }
+
+                        jumpCount += 1;
+                        if(playerLY >= 95*jumpCount){
+                            setTimeout(() => { console.log(jumpCount); playerLX += 7; playerLY -= 95*jumpCount; jumpCount = 0; }, 265);
+                        //     playerY -= 150;
+                         } else {
+                            setTimeout(() => { console.log(jumpCount); playerLX += 7; playerLY -= (playerLY + playerLY/6); jumpCount = 0; }, 265);
+                            //playerY -= (playerY + playerY/6);
                         }
                     }
                 }
