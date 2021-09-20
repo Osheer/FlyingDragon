@@ -4796,6 +4796,8 @@ ig.module("game.entities.game-control")
                 }
                 if (this.pointer.isFirstPressed && (gameState == 1) && (deathTrigger == 1)) {
                     gameState = 2;
+                    playerY = 450;
+                    playerLY = 200;
                     //clearInterval(scoreCount);
                 }
             },
@@ -4804,7 +4806,7 @@ ig.module("game.entities.game-control")
             jumpTap: function () {
                 if (MJS.view.viewport.orientation.portrait) {
                     
-                    if (this.pointer.isFirstPressed && deathTrigger == 0 && gameState != 0) {
+                    if (this.pointer.isFirstPressed && deathTrigger == 0 && gameState == 1) {
                         // console.log("JUMP TAP");
                         // console.log(ig.input.mouse.y);
 
