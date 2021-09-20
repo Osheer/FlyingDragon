@@ -4701,7 +4701,7 @@ ig.module("game.entities.game-control")
                     if (gameState == 1) {
                         this.dragonGravity();
                         this.jumpTap();
-                        //this.spawnEnemy();
+                        this.spawnEnemy();
                         this.collisionCheck();
                         //this.updateScore();
                     }
