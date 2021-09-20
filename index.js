@@ -4811,13 +4811,14 @@ ig.module("game.entities.game-control")
                         // console.log(ig.input.mouse.y);
 
                         //jump
-                        jumpCount += 1;
-                        if(playerY >= 140*jumpCount){
-                            setTimeout(() => { console.log(jumpCount); playerX += 7; playerY -= 140*jumpCount; jumpCount = 0; }, 265);
-                        //     playerY -= 150;
+                        //jumpCount += 1;
+                        playerX += 7
+                        if(playerY >= 140){
+                            //setTimeout(() => { console.log(jumpCount); playerX += 7; playerY -= 140*jumpCount; jumpCount = 0; }, 265);
+                            playerY -= 140;
                          } else {
-                            setTimeout(() => { console.log(jumpCount); playerX += 7; playerY -= (playerY + playerY/6); jumpCount = 0; }, 265);
-                            //playerY -= (playerY + playerY/6);
+                            //setTimeout(() => { console.log(jumpCount); playerX += 7; playerY -= (playerY + playerY/6); jumpCount = 0; }, 265);
+                            playerY -= (playerY + playerY/6);
                         }
 
                         
@@ -4834,14 +4835,14 @@ ig.module("game.entities.game-control")
                         // } else {
                         //     playerLY -= (playerLY + playerY/6);
                         // }
-
-                        jumpCount += 1;
-                        if(playerLY >= 95*jumpCount){
-                            setTimeout(() => { console.log(jumpCount); playerLX += 7; playerLY -= 95*jumpCount; jumpCount = 0; }, 265);
-                        //     playerY -= 150;
+                        playerLX += 7
+                        //jumpCount += 1;
+                        if(playerLY >= 120){
+                            //setTimeout(() => { console.log(jumpCount); playerLX += 7; playerLY -= 95*jumpCount; jumpCount = 0; }, 265);
+                             playerLY -= 120;
                          } else {
-                            setTimeout(() => { console.log(jumpCount); playerLX += 7; playerLY -= (playerLY + playerLY/6); jumpCount = 0; }, 265);
-                            //playerY -= (playerY + playerY/6);
+                            //setTimeout(() => { console.log(jumpCount); playerLX += 7; playerLY -= (playerLY + playerLY/6); jumpCount = 0; }, 265);
+                            playerLY -= (playerLY + playerLY/6);
                         }
                     }
                 }
