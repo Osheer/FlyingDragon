@@ -4800,7 +4800,7 @@ ig.module("game.entities.game-control")
                 if(coinX <= 0){
                     coinCollect = 0;
                     var newY = this.getRandomIntInclusive(90, 650);
-                    setTimeout(() => {coinX = 1000; coinY = newY }, this.getRandomIntInclusive(350, 850));
+                    setTimeout(() => {coinX = 800; coinY = newY }, this.getRandomIntInclusive(150, 350));
                 }
             },
 
@@ -4955,6 +4955,9 @@ ig.module("game.entities.game-control")
 
                 enemyLX = 500;
                 enemyLY = 200;
+
+                //Coin
+                coinX = 1000;
             },
 
             //collision check function
