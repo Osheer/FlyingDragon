@@ -46,8 +46,8 @@ var spriteSheets = {
         installNow: "Resources/installerbutton.png",
         blackLayer: "Resources/black-layer.png",
         tutorialHand: "Resources/tutorialhand.png",
-        tutorialArrow: "Resources/tutorialarrow.png",
         gameOverText: "Resources/game-over-txt.png",
+        coin: "Resources/coin.png",
 
     };
 
@@ -91,8 +91,14 @@ var totalScore = 0;
 var scoreTrigger = 0;
 var scoreUpdate;
 
-//jump
-var jumpCount = 0;
+//jump variations with number of taps
+//var jumpCount = 0;
+
+//coin
+var coinX = 1000;
+var coinY = 60;
+
+//var coinCollect = 0;
 
 var Vector2 = function (b, c) {
     this.x = b;
@@ -4093,7 +4099,7 @@ ig.module("game.entities.game-control")
 
             imgBlackLayer: new ig.Image(imagePath.blackLayer),
             imageInstall: new ig.Image(imagePath.installNow),
-            imgArrow: new ig.Image(imagePath.tutorialArrow),
+            imageCoin: new ig.Image(imagePath.coin),
             imgTutorialHand: new ig.Image(imagePath.tutorialHand),
             imgGameOverText: new ig.Image(imagePath.gameOverText),
             imgLogo: new ig.Image(imagePath.logo),
@@ -4183,6 +4189,7 @@ ig.module("game.entities.game-control")
                 this.scaleMonster3 = { x: 0, y: 0 };
                 enemyY = this.getRandomIntInclusive(-10, 750);
                 enemyLY = this.getRandomIntInclusive(-10, 350);
+                coinY = this.getRandomIntInclusive(90, 650);
                 this.buttonFeed = ig.game.spawnEntity(ButtonCard, 100, 100, {
                     image: this.imageInstall, cbClicked: this.buttonFeedClicked.bind(this),
                     isAnimating: !0,
@@ -4309,6 +4316,7 @@ ig.module("game.entities.game-control")
                 if (this.gamepause == 0) { //if game is NOT paused
                     this.parent();
                     this.drawBG();
+                    this.drawCoin();
                     //this.anim1.draw(playerX, playerY);
                     this.drawDragon();
                     if (gameState == 2) {
@@ -4624,6 +4632,14 @@ ig.module("game.entities.game-control")
                 this.imgHandPointer.draw(0, 0);
                 b.restore();
             },
+            drawCoin: function(){
+                var b = ig.system.context;
+                //b.translate(100, 300);
+                //b.scale(0.85, 0.85);
+                this.imageCoin.draw(coinX, coinY);
+                b.restore();
+            },
+
             drawGameOver: function () {
                 var b = ig.system.context;
                 b.save();
@@ -4701,7 +4717,9 @@ ig.module("game.entities.game-control")
                     if (gameState == 1) {
                         this.dragonGravity();
                         this.jumpTap();
+                        this.spawnCoin();
                         this.spawnEnemy();
+                        
                         this.collisionCheck();
                         //this.updateScore();
                     }
@@ -4773,6 +4791,17 @@ ig.module("game.entities.game-control")
                     }
                 }
 
+            },
+
+            spawnCoin: function() {
+                //Portrait 90 <= y <= 650
+                //Landscape 20 <= y <= 320
+                coinX -= 7;
+                if(coinX <= 0){
+                    coinCollect = 0;
+                    var newY = this.getRandomIntInclusive(90, 650);
+                    setTimeout(() => {coinX = 1000; coinY = newY }, this.getRandomIntInclusive(1500, 2500));
+                }
             },
 
             //Randomise enemy co-oridnates
@@ -4948,6 +4977,23 @@ ig.module("game.entities.game-control")
                     //mountain
                     var mHeight = 600 * (window.innerHeight / 667);
 
+                    //coin
+
+                    var coin1X = coinX*0.7;
+                    var coin2X = coin1X + 40;
+                    var coin1Y = coinY*0.7;
+                    var coin2Y = coin1Y + 40;
+
+                    //checking for coin
+                    if(((playerX2 >= coin1X && playerX2 <= coin2X) && ((playerY1 >= coin1Y && playerY1 <= coin2Y) || (playerY2 >= coin1Y && playerY2 <= coin2Y))) ||
+                    (playerX1 >= coin1X && playerX1 <= coin2X) && ((playerY2 >= coin1Y && playerY2 <= coin2Y) || (playerY1 >= coin1Y && playerY1 <= coin2Y))){
+                        console.log("COIN COLLECTED");
+                        coinX = -1000;
+                        totalScore+=100;
+                        displayScore+=100;
+                        //coinCollect = 1;
+                    }
+
                     //checking for mountain collision
                     if (playerY2 >= mHeight) {
                         deathTrigger = 1;
@@ -4976,6 +5022,15 @@ ig.module("game.entities.game-control")
                             this.updateScore();
                         }
                     }
+
+                    
+                    //coinX = 100, coinY = 320
+                    if((ig.input.mouse.x >= coinX*0.7 ) && (ig.input.mouse.x <= coinX*0.7 + 40) && (ig.input.mouse.y >= coinY *0.7) && (ig.input.mouse.y <= coinY *0.7 + 40)){
+                        if(this.pointer.isPressed){
+                            console.log("Coin clicked");
+                        }
+                    }
+
                 } else {
                     //----------------LANDSCAPE---------------------
 
