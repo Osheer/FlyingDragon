@@ -4800,7 +4800,7 @@ ig.module("game.entities.game-control")
                 if(coinX <= 0){
                     coinCollect = 0;
                     var newY = this.getRandomIntInclusive(90, 650);
-                    setTimeout(() => {coinX = 1000; coinY = newY }, this.getRandomIntInclusive(1500, 2500));
+                    setTimeout(() => {coinX = 1000; coinY = newY }, this.getRandomIntInclusive(350, 850));
                 }
             },
 
