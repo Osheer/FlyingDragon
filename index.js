@@ -55,27 +55,28 @@ var spriteSheets = {
 var gameStart = 0;  //signals game start
 
 //Dragon Co-ordintates
-    //Portrait
+//Portrait
 var playerX = 70;
 var playerY = 450;
 
-    //Landscape
+//Landscape
 var playerLX = 100;
 var playerLY = 200;
 
 
 //Enemy Co-ordinates
-    //Portrait
+//Portrait
 var enemyX = 1000;
 var enemyY = 350;
 
-    //Landscape
+//Landscape
 var enemyLX = 2000;
 var enemyLY = 300;
 
 //Triggers
 var playerTrigger = 0;
 var deathTrigger = 0;
+var deathAnimating = 0;
 
 //Animation Controllers
 var dragonAnim = 0;
@@ -97,6 +98,9 @@ var scoreUpdate;
 //coin
 var coinX = 1000;
 var coinY = 60;
+
+var coinLX = 1500;
+var coinLY = 60;
 
 //var coinCollect = 0;
 
@@ -4145,7 +4149,11 @@ ig.module("game.entities.game-control")
             gamepause: 0,
             orientationcheck: -1,
 
+            deadY: playerY,
 
+            deadLY: playerLY,
+
+            rotateA: 0,
 
 
 
@@ -4180,7 +4188,7 @@ ig.module("game.entities.game-control")
             initVFX: function () {
                 this.loveVFX = ig.game.spawnEntity(Spark, 0.5 * ig.system.width, 0.5 * ig.system.height, { movement: SPARK_UP });
                 this.loveVFX.visible = !1;
-                
+
             },
             initVar: function () {
                 this.counterIdleCurrent = this.counterIdleMax = 2;
@@ -4210,7 +4218,7 @@ ig.module("game.entities.game-control")
                     zIndex: 1
                 });
 
-                
+
 
             },
             updateOnOrientationChange: function () {
@@ -4318,7 +4326,14 @@ ig.module("game.entities.game-control")
                     this.drawBG();
                     this.drawCoin();
                     //this.anim1.draw(playerX, playerY);
-                    this.drawDragon();
+                    
+                    if(deathAnimating == 1){
+                        this.drawDeadDragon();
+                        this.dragonDeathAnimation();
+                    } else {
+                        this.drawDragon();
+                    }
+
                     if (gameState == 2) {
                         this.drawGameOver();
                         this.drawLogoEnd();
@@ -4334,7 +4349,7 @@ ig.module("game.entities.game-control")
                     } else {
                         this.addHandPointerPortrait.visible = 0;
                         this.addHandPointerLandscape.visible = 0;
-                        if(gameState !== 2){
+                        if (gameState !== 2) {
                             this.drawEnemyDragon();
                             this.drawScore();
                         }
@@ -4450,17 +4465,17 @@ ig.module("game.entities.game-control")
 
             },
 
-            drawScore: function() {
+            drawScore: function () {
                 var b = ig.system.context;
                 b.save();
                 b.textAlign = "center";
                 b.textBaseline = "top";
                 b.font = "bold 28px arial";
                 b.fillStyle = "#FFFFFF";
-                if (MJS.view.viewport.orientation.portrait){
+                if (MJS.view.viewport.orientation.portrait) {
                     b.fillText(`Score: ${totalScore} `, 450, 20);
                 } else {
-                    b.fillText(`Score: ${totalScore}`, 850, 20 );
+                    b.fillText(`Score: ${totalScore}`, 850, 20);
                 }
             },
 
@@ -4468,12 +4483,12 @@ ig.module("game.entities.game-control")
                 var b = ig.system.context;
                 b.save();
                 //b.translate(100, 100);
-                
+
                 b.textAlign = "center";
                 b.textBaseline = "top";
                 if (MJS.view.viewport.orientation.portrait) {
                     b.font = "bold 45px arial";
-                    if(deathTrigger == 0){
+                    if (deathTrigger == 0) {
                         b.fillStyle = "#FFFFFF";
                         b.fillText("TAP TO FLY!", 280, 300);
                     } else {
@@ -4482,7 +4497,7 @@ ig.module("game.entities.game-control")
                     }
                 } else {
                     b.font = "bold 45px arial";
-                    if(deathTrigger == 0){
+                    if (deathTrigger == 0) {
                         b.fillStyle = "#FFFFFF";
                         b.fillText("TAP TO FLY!", 450, 200);
                     } else {
@@ -4499,6 +4514,7 @@ ig.module("game.entities.game-control")
                     b.save();
                     b.translate(playerX, playerY);
                     b.scale(0.45, 0.45);
+                    //b.rotate(rotateA);
                     if (dragonAnim == 0) {
                         this.imgDragon1.draw(0, 0);
                         setTimeout(() => { dragonAnim = 1 }, 100);
@@ -4548,11 +4564,11 @@ ig.module("game.entities.game-control")
                     b.restore();
                 }
             },
-            
+
 
             drawEnemyDragon: function () {
                 if (MJS.view.viewport.orientation.portrait) {
-                    
+
                     var b = ig.system.context;
                     b.save();
                     b.translate(enemyX, enemyY);
@@ -4632,12 +4648,82 @@ ig.module("game.entities.game-control")
                 this.imgHandPointer.draw(0, 0);
                 b.restore();
             },
-            drawCoin: function(){
-                var b = ig.system.context;
-                //b.translate(100, 300);
-                //b.scale(0.85, 0.85);
-                this.imageCoin.draw(coinX, coinY);
-                b.restore();
+            drawCoin: function () {
+                if (MJS.view.viewport.orientation.portrait) {
+                    var b = ig.system.context;
+                    //b.translate(100, 300);
+                    //b.scale(0.85, 0.85);
+                    this.imageCoin.draw(coinX, coinY);
+                    b.restore();
+                } else {
+                    var b = ig.system.context;
+                    //b.translate(100, 300);
+                    //b.scale(0.85, 0.85);
+                    this.imageCoin.draw(coinLX, coinLY);
+                    b.restore();
+                }
+            },
+
+            drawDeadDragon: function () {
+                if (MJS.view.viewport.orientation.portrait) {
+                    deadY = playerY;
+                    
+                    var b = ig.system.context;
+                    b.save();
+                    b.translate(playerX, this.deadY);
+                    b.scale(0.45, 0.45);
+                    b.rotate(this.rotateA);
+                    if (dragonAnim == 0) {
+                        this.imgDragon1.draw(0, 0);
+                        setTimeout(() => { dragonAnim = 1 }, 100);
+                    } else if (dragonAnim == 1) {
+                        this.imgDragon2.draw(0, 0);
+                        setTimeout(() => { dragonAnim = 2 }, 100);
+                    } else if (dragonAnim == 2) {
+                        this.imgDragon3.draw(0, 0);
+                        setTimeout(() => { dragonAnim = 3 }, 100);
+                    } else if (dragonAnim == 3) {
+                        this.imgDragon4.draw(0, 0);
+                        setTimeout(() => { dragonAnim = 4 }, 100);
+                    } else if (dragonAnim == 4) {
+                        this.imgDragon5.draw(0, 0);
+                        setTimeout(() => { dragonAnim = 5 }, 100);
+                    } else {
+                        this.imgDragon6.draw(0, 0);
+                        setTimeout(() => { dragonAnim = 0 }, 100);
+                    }
+                    b.restore();
+
+
+                } else {
+                    deadLY = playerLY; 
+
+                    var b = ig.system.context;
+                    b.save();
+                    b.translate(playerLX, this.deadLY);
+                    b.scale(0.4, 0.4);
+                    b.rotate(this.rotateA);
+                    if (dragonAnim == 0) {
+                        this.imgDragon1.draw(0, 0);
+                        setTimeout(() => { dragonAnim = 1 }, 100);
+                    } else if (dragonAnim == 1) {
+                        this.imgDragon2.draw(0, 0);
+                        setTimeout(() => { dragonAnim = 2 }, 100);
+                    } else if (dragonAnim == 2) {
+                        this.imgDragon3.draw(0, 0);
+                        setTimeout(() => { dragonAnim = 3 }, 100);
+                    } else if (dragonAnim == 3) {
+                        this.imgDragon4.draw(0, 0);
+                        setTimeout(() => { dragonAnim = 4 }, 100);
+                    } else if (dragonAnim == 4) {
+                        this.imgDragon5.draw(0, 0);
+                        setTimeout(() => { dragonAnim = 5 }, 100);
+                    } else {
+                        this.imgDragon6.draw(0, 0);
+                        setTimeout(() => { dragonAnim = 0 }, 100);
+                    }
+                    b.restore();
+                }
             },
 
             drawGameOver: function () {
@@ -4685,6 +4771,29 @@ ig.module("game.entities.game-control")
                 }
             },
 
+
+            dragonDeathAnimation: function(){
+                
+                //this.deadY = playerY;
+                var newA = -18;
+                var newY = 1300;
+                var newLY = 1000;
+                var delay = 1.4;
+                this.tween({ deadY: newY, deadLY: newLY }, delay, {
+                    easing: ig.Tween.Easing.Linear.EaseNone,
+                    onComplete: function () {
+                    }.bind(this)
+                }).start();
+
+                this.tween({ rotateA: newA }, delay, {
+                    easing: ig.Tween.Easing.Linear.EaseNone,
+                    onComplete: function () {
+                        //tween.stop();
+                    }.bind(this)
+                }).start();
+                  
+            },
+
             showButtonFeed: function () {
                 this.buttonFeed.visible = !0;
             },
@@ -4711,7 +4820,7 @@ ig.module("game.entities.game-control")
                     //this.updatePointer();
                     // this.collision();
                     //this.dragonCollider();
-                    
+
                     this.detectPointer();
                     this.checkTap();
                     if (gameState == 1) {
@@ -4719,7 +4828,7 @@ ig.module("game.entities.game-control")
                         this.jumpTap();
                         this.spawnCoin();
                         this.spawnEnemy();
-                        
+
                         this.collisionCheck();
                         //this.updateScore();
                     }
@@ -4748,24 +4857,26 @@ ig.module("game.entities.game-control")
             },
 
             updateScore: function () {
-                
-                if(scoreTrigger == 1) {
-                    scoreUpdate = setInterval (() => { totalScore += 1, displayScore += 1 }, 1000);
+
+                if (scoreTrigger == 1) {
+                    scoreUpdate = setInterval(() => { totalScore += 1, displayScore += 1 }, 1000);
                 }
                 if (scoreTrigger == 2) {
                     clearInterval(scoreUpdate);
                     totalScore = 0;
                 }
-                
+
             },
 
             //Fall function
             dragonGravity: function () {
                 if (deathTrigger == 0) {
                     if (MJS.view.viewport.orientation.portrait) {
+                        this.deadY += 3.5;
                         playerY += 3.5;
                         playerX -= 0.15;
                     } else {
+                        this.deadLY += 2.5;
                         playerLY += 2.5;
                         playerLX -= 0.15;
                     }
@@ -4793,15 +4904,26 @@ ig.module("game.entities.game-control")
 
             },
 
-            spawnCoin: function() {
+            spawnCoin: function () {
                 //Portrait 90 <= y <= 650
                 //Landscape 20 <= y <= 320
-                coinX -= 7;
-                if(coinX <= 0){
-                    coinCollect = 0;
-                    var newY = this.getRandomIntInclusive(90, 650);
-                    setTimeout(() => {coinX = 800; coinY = newY }, this.getRandomIntInclusive(150, 350));
+                if (MJS.view.viewport.orientation.portrait) {
+                    coinX -= 7
+                    if (coinX <= 0) {
+                        //coinCollect = 0;
+                        var newY = this.getRandomIntInclusive(90, 650);
+                        
+                        setTimeout(() => { coinX = 800; coinY = newY; }, this.getRandomIntInclusive(150, 350));
+                    }
+                } else {
+                    coinLX -= 7;
+                    if(coinLX <= 0){
+                        var newLY = this.getRandomIntInclusive(20, 320);
+
+                        setTimeout(() => { coinLX = 1400; coinLY = newLY; }, this.getRandomIntInclusive(150, 350));
+                    }
                 }
+                
             },
 
             //Randomise enemy co-oridnates
@@ -4813,17 +4935,17 @@ ig.module("game.entities.game-control")
 
 
             checkTap: function () {
-                if (this.pointer.isFirstPressed && gameState == 0) {
+                if (this.pointer.isFirstPressed && gameState == 0 && deathAnimating == 0) {
                     gameState = 1;
-                    if(deathTrigger !== 1){
+                    if (deathTrigger !== 1) {
                         scoreTrigger = 1;
                         this.updateScore();
                     }
                     //setTimeout(() => {totalScore += 1}, 1000);
                     // scoreCount = setInterval(()=> {totalScore += 1}, 1000);
-                    
+
                 }
-                if (this.pointer.isFirstPressed && (gameState == 1) && (deathTrigger == 1)) {
+                if (this.pointer.isFirstPressed && (gameState == 1) && (deathTrigger == 1) && deathAnimating == 0) {
                     gameState = 2;
                     playerY = 450;
                     playerLY = 200;
@@ -4834,7 +4956,7 @@ ig.module("game.entities.game-control")
             //Jump function
             jumpTap: function () {
                 if (MJS.view.viewport.orientation.portrait) {
-                    
+
                     if (this.pointer.isFirstPressed && deathTrigger == 0 && gameState == 1) {
                         // console.log("JUMP TAP");
                         // console.log(ig.input.mouse.y);
@@ -4842,16 +4964,18 @@ ig.module("game.entities.game-control")
                         //jump
                         //jumpCount += 1;
                         playerX += 7
-                        if(playerY >= 140){
+                        if (playerY >= 140) {
                             //setTimeout(() => { console.log(jumpCount); playerX += 7; playerY -= 140*jumpCount; jumpCount = 0; }, 265);
                             playerY -= 140;
-                         } else {
+                            this.deadY -= 140;
+                        } else {
                             //setTimeout(() => { console.log(jumpCount); playerX += 7; playerY -= (playerY + playerY/6); jumpCount = 0; }, 265);
-                            playerY -= (playerY + playerY/6);
+                            playerY -= (playerY + playerY / 6);
+                            this.deadY -=  (playerY + playerY / 6);
                         }
 
-                        
-                        
+
+
 
                     }
                 } else {
@@ -4866,12 +4990,14 @@ ig.module("game.entities.game-control")
                         // }
                         playerLX += 7
                         //jumpCount += 1;
-                        if(playerLY >= 120){
+                        if (playerLY >= 120) {
                             //setTimeout(() => { console.log(jumpCount); playerLX += 7; playerLY -= 95*jumpCount; jumpCount = 0; }, 265);
-                             playerLY -= 120;
-                         } else {
+                            playerLY -= 120;
+                            this.deadLY -= 120;
+                        } else {
                             //setTimeout(() => { console.log(jumpCount); playerLX += 7; playerLY -= (playerLY + playerLY/6); jumpCount = 0; }, 265);
-                            playerLY -= (playerLY + playerLY/6);
+                            playerLY -= (playerLY + playerLY / 6);
+                            this.deadLY -= (playerLY + playerLY / 6);
                         }
                     }
                 }
@@ -4958,6 +5084,7 @@ ig.module("game.entities.game-control")
 
                 //Coin
                 coinX = 1000;
+                coinLX = 1500;
             },
 
             //collision check function
@@ -4982,27 +5109,29 @@ ig.module("game.entities.game-control")
 
                     //coin
 
-                    var coin1X = coinX*0.7;
+                    var coin1X = coinX * 0.7;
                     var coin2X = coin1X + 40;
-                    var coin1Y = coinY*0.7;
+                    var coin1Y = coinY * 0.7;
                     var coin2Y = coin1Y + 40;
 
                     //checking for coin
-                    if(((playerX2 >= coin1X && playerX2 <= coin2X) && ((playerY1 >= coin1Y && playerY1 <= coin2Y) || (playerY2 >= coin1Y && playerY2 <= coin2Y))) ||
-                    (playerX1 >= coin1X && playerX1 <= coin2X) && ((playerY2 >= coin1Y && playerY2 <= coin2Y) || (playerY1 >= coin1Y && playerY1 <= coin2Y))){
+                    if (((playerX2 >= coin1X && playerX2 <= coin2X) && ((playerY1 >= coin1Y && playerY1 <= coin2Y) || (playerY2 >= coin1Y && playerY2 <= coin2Y))) ||
+                        (playerX1 >= coin1X && playerX1 <= coin2X) && ((playerY2 >= coin1Y && playerY2 <= coin2Y) || (playerY1 >= coin1Y && playerY1 <= coin2Y))) {
                         console.log("COIN COLLECTED");
                         coinX = -1000;
-                        totalScore+=100;
-                        displayScore+=100;
+                        totalScore += 100;
+                        displayScore += 100;
                         //coinCollect = 1;
                     }
 
                     //checking for mountain collision
                     if (playerY2 >= mHeight) {
                         deathTrigger = 1;
-                        this.resetGame();
+                        deathAnimating = 1;
+                        setTimeout(() => {this.resetGame(); deathAnimating = 0}, 1700);
                         scoreTrigger = 2;
                         this.updateScore();
+                        
                         console.log("Mountain Collision");
                     }
 
@@ -5019,17 +5148,20 @@ ig.module("game.entities.game-control")
                     if (((playerX2 >= enemyX1) && (playerX2 <= enemyX2)) || ((playerX1 >= enemyX1) && (playerX1 <= enemyX2))) {
                         if (((playerY1 <= enemyY2) && (playerY1 >= enemyY1)) || ((playerY2 >= enemyY1) && (playerY2 <= enemyY2))) {
                             console.log("COLLISION DETECTED");
+                            
                             deathTrigger = 1;
-                            this.resetGame();
+                            deathAnimating = 1;
+                            setTimeout(() => {this.resetGame(); deathAnimating = 0}, 1700);
+                            //this.resetGame();
                             scoreTrigger = 2;
                             this.updateScore();
                         }
                     }
 
-                    
+                    //Coin Collider
                     //coinX = 100, coinY = 320
-                    if((ig.input.mouse.x >= coinX*0.7 ) && (ig.input.mouse.x <= coinX*0.7 + 40) && (ig.input.mouse.y >= coinY *0.7) && (ig.input.mouse.y <= coinY *0.7 + 40)){
-                        if(this.pointer.isPressed){
+                    if ((ig.input.mouse.x >= coinX * 0.7) && (ig.input.mouse.x <= coinX * 0.7 + 40) && (ig.input.mouse.y >= coinY * 0.7) && (ig.input.mouse.y <= coinY * 0.7 + 40)) {
+                        if (this.pointer.isPressed) {
                             console.log("Coin clicked");
                         }
                     }
@@ -5053,10 +5185,32 @@ ig.module("game.entities.game-control")
 
                     var mHeight = 330
 
+                    var coin1X = coinLX * 0.7;
+                    var coin2X = coin1X + 40;
+                    var coin1Y = coinLY * 0.7;
+                    var coin2Y = coin1Y + 40;
+
+                    //checking for coin
+                    if(((playerX2 >= coin1X && playerX2 <= coin2X) && ((playerY1 >= coin1Y && playerY1 <= coin2Y) || (playerY2 >= coin1Y && playerY2 <= coin2Y))) ||
+                    (playerX1 >= coin1X && playerX1 <= coin2X) && ((playerY2 >= coin1Y && playerY2 <= coin2Y) || (playerY1 >= coin1Y && playerY1 <= coin2Y))){
+                        console.log("COIN COLLECTED");
+                        coinLX = -1000;
+                        totalScore+=100;
+                        displayScore+=100;
+                        //coinCollect = 1;
+                    }
+
+                    if ((ig.input.mouse.x >= coin1X) && (ig.input.mouse.x <= coin2X) && (ig.input.mouse.y >= coin1Y) && (ig.input.mouse.y <= coin2Y)) {
+                        if (this.pointer.isPressed) {
+                            console.log("Coin clicked");
+                        }
+                    }
+
                     //checking for mountain collision
                     if (playerY2 >= mHeight) {
                         deathTrigger = 1;
-                        this.resetGame();
+                        deathAnimating = 1;
+                        setTimeout(() => {this.resetGame(); deathAnimating = 0}, 1700);
                         console.log("Mountain Collision");
                         scoreTrigger = 2;
                         this.updateScore();
@@ -5076,7 +5230,8 @@ ig.module("game.entities.game-control")
                         if (((playerY1 <= enemyY2) && (playerY1 >= enemyY1)) || ((playerY2 >= enemyY1) && (playerY2 <= enemyY2))) {
                             console.log("COLLISION DETECTED");
                             deathTrigger = 1;
-                            this.resetGame();
+                            deathAnimating = 1;
+                            setTimeout(() => {this.resetGame(); deathAnimating = 0}, 1700);
                             scoreTrigger = 2;
                             this.updateScore();
                         }
@@ -5167,7 +5322,7 @@ ig.module("game.main")
                     for (var b = 0; b < this.entities.length; b++) this.entities[b].ignorePause && this.entities[b].update();
                     this.checkEntities();
                     if (this._doSortEntities || this.autoSort) this.sortEntities(), (this._doSortEntities = !1);
-                    
+
                 } else {
                     this.parent();
 
