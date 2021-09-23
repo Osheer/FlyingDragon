@@ -104,6 +104,8 @@ var coinLY = 60;
 
 //var coinCollect = 0;
 
+
+
 var Vector2 = function (b, c) {
     this.x = b;
     this.y = c;
@@ -2001,6 +2003,7 @@ ig.module("impact.impact")
             ig.input = new ig.Input();
             ig.ready = !0;
             new (h || ig.Loader)(c, ig.resources).load();
+
         };
     });
 ig.baked = !0;
@@ -4064,7 +4067,7 @@ ig.module("game.entities.dagame")
             }
         });
 
-
+       
     });
 
 ig.baked = !0;
@@ -4079,7 +4082,7 @@ ig.module("game.entities.game-control")
         "game.entities.buttons.button-card",
         "game.entities.buttons.button-card2",
         "game.entities.buttons.button-monster",
-        "game.entities.buttons.button-install-now"
+        "game.entities.buttons.button-install-now",
     )
     .defines(function () {
         EntityGameControl = ig.Entity.extend({
@@ -4221,6 +4224,7 @@ ig.module("game.entities.game-control")
 
 
             },
+
             updateOnOrientationChange: function () {
                 if (MJS.view.viewport.orientation.portrait) {
                     this.monsterAllFactorY = -50;
@@ -4326,8 +4330,8 @@ ig.module("game.entities.game-control")
                     this.drawBG();
                     this.drawCoin();
                     //this.anim1.draw(playerX, playerY);
-                    
-                    if(deathAnimating == 1){
+
+                    if (deathAnimating == 1) {
                         this.drawDeadDragon();
                         this.dragonDeathAnimation();
                     } else {
@@ -4667,7 +4671,7 @@ ig.module("game.entities.game-control")
             drawDeadDragon: function () {
                 if (MJS.view.viewport.orientation.portrait) {
                     deadY = playerY;
-                    
+
                     var b = ig.system.context;
                     b.save();
                     b.translate(playerX, this.deadY);
@@ -4696,7 +4700,7 @@ ig.module("game.entities.game-control")
 
 
                 } else {
-                    deadLY = playerLY; 
+                    deadLY = playerLY;
 
                     var b = ig.system.context;
                     b.save();
@@ -4772,26 +4776,27 @@ ig.module("game.entities.game-control")
             },
 
 
-            dragonDeathAnimation: function(){
-                
+            dragonDeathAnimation: function () {
+
                 //this.deadY = playerY;
-                var newA = -18;
+                var newA = -3;
                 var newY = 1300;
                 var newLY = 1000;
-                var delay = 1.4;
+                var delay = 0.8;
                 this.tween({ deadY: newY, deadLY: newLY }, delay, {
                     easing: ig.Tween.Easing.Linear.EaseNone,
                     onComplete: function () {
                     }.bind(this)
                 }).start();
 
-                this.tween({ rotateA: newA }, delay, {
+                this.tween({ rotateA: newA }, 0.4, {
                     easing: ig.Tween.Easing.Linear.EaseNone,
+                    loop: ig.Tween.Loop.Revert,
                     onComplete: function () {
                         //tween.stop();
                     }.bind(this)
                 }).start();
-                  
+
             },
 
             showButtonFeed: function () {
@@ -4912,18 +4917,18 @@ ig.module("game.entities.game-control")
                     if (coinX <= 0) {
                         //coinCollect = 0;
                         var newY = this.getRandomIntInclusive(90, 650);
-                        
+
                         setTimeout(() => { coinX = 800; coinY = newY; }, this.getRandomIntInclusive(150, 350));
                     }
                 } else {
                     coinLX -= 7;
-                    if(coinLX <= 0){
+                    if (coinLX <= 0) {
                         var newLY = this.getRandomIntInclusive(20, 320);
 
                         setTimeout(() => { coinLX = 1400; coinLY = newLY; }, this.getRandomIntInclusive(150, 350));
                     }
                 }
-                
+
             },
 
             //Randomise enemy co-oridnates
@@ -4955,8 +4960,8 @@ ig.module("game.entities.game-control")
 
             //Jump function
             jumpTap: function () {
-                if (MJS.view.viewport.orientation.portrait) {
 
+                if (MJS.view.viewport.orientation.portrait) {
                     if (this.pointer.isFirstPressed && deathTrigger == 0 && gameState == 1) {
                         // console.log("JUMP TAP");
                         // console.log(ig.input.mouse.y);
@@ -4971,7 +4976,7 @@ ig.module("game.entities.game-control")
                         } else {
                             //setTimeout(() => { console.log(jumpCount); playerX += 7; playerY -= (playerY + playerY/6); jumpCount = 0; }, 265);
                             playerY -= (playerY + playerY / 6);
-                            this.deadY -=  (playerY + playerY / 6);
+                            this.deadY -= (playerY + playerY / 6);
                         }
 
 
@@ -5128,10 +5133,10 @@ ig.module("game.entities.game-control")
                     if (playerY2 >= mHeight) {
                         deathTrigger = 1;
                         deathAnimating = 1;
-                        setTimeout(() => {this.resetGame(); deathAnimating = 0}, 1700);
+                        setTimeout(() => { this.resetGame(); deathAnimating = 0 }, 1700);
                         scoreTrigger = 2;
                         this.updateScore();
-                        
+
                         console.log("Mountain Collision");
                     }
 
@@ -5148,10 +5153,10 @@ ig.module("game.entities.game-control")
                     if (((playerX2 >= enemyX1) && (playerX2 <= enemyX2)) || ((playerX1 >= enemyX1) && (playerX1 <= enemyX2))) {
                         if (((playerY1 <= enemyY2) && (playerY1 >= enemyY1)) || ((playerY2 >= enemyY1) && (playerY2 <= enemyY2))) {
                             console.log("COLLISION DETECTED");
-                            
+
                             deathTrigger = 1;
                             deathAnimating = 1;
-                            setTimeout(() => {this.resetGame(); deathAnimating = 0}, 1700);
+                            setTimeout(() => { this.resetGame(); deathAnimating = 0 }, 1700);
                             //this.resetGame();
                             scoreTrigger = 2;
                             this.updateScore();
@@ -5191,12 +5196,12 @@ ig.module("game.entities.game-control")
                     var coin2Y = coin1Y + 40;
 
                     //checking for coin
-                    if(((playerX2 >= coin1X && playerX2 <= coin2X) && ((playerY1 >= coin1Y && playerY1 <= coin2Y) || (playerY2 >= coin1Y && playerY2 <= coin2Y))) ||
-                    (playerX1 >= coin1X && playerX1 <= coin2X) && ((playerY2 >= coin1Y && playerY2 <= coin2Y) || (playerY1 >= coin1Y && playerY1 <= coin2Y))){
+                    if (((playerX2 >= coin1X && playerX2 <= coin2X) && ((playerY1 >= coin1Y && playerY1 <= coin2Y) || (playerY2 >= coin1Y && playerY2 <= coin2Y))) ||
+                        (playerX1 >= coin1X && playerX1 <= coin2X) && ((playerY2 >= coin1Y && playerY2 <= coin2Y) || (playerY1 >= coin1Y && playerY1 <= coin2Y))) {
                         console.log("COIN COLLECTED");
                         coinLX = -1000;
-                        totalScore+=100;
-                        displayScore+=100;
+                        totalScore += 100;
+                        displayScore += 100;
                         //coinCollect = 1;
                     }
 
@@ -5210,7 +5215,7 @@ ig.module("game.entities.game-control")
                     if (playerY2 >= mHeight) {
                         deathTrigger = 1;
                         deathAnimating = 1;
-                        setTimeout(() => {this.resetGame(); deathAnimating = 0}, 1700);
+                        setTimeout(() => { this.resetGame(); deathAnimating = 0 }, 1700);
                         console.log("Mountain Collision");
                         scoreTrigger = 2;
                         this.updateScore();
@@ -5231,7 +5236,7 @@ ig.module("game.entities.game-control")
                             console.log("COLLISION DETECTED");
                             deathTrigger = 1;
                             deathAnimating = 1;
-                            setTimeout(() => {this.resetGame(); deathAnimating = 0}, 1700);
+                            setTimeout(() => { this.resetGame(); deathAnimating = 0 }, 1700);
                             scoreTrigger = 2;
                             this.updateScore();
                         }
