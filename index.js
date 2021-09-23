@@ -56,7 +56,7 @@ var gameStart = 0;  //signals game start
 
 //Dragon Co-ordintates
 //Portrait
-var playerX = 70;
+var playerX = 50;
 var playerY = 450;
 
 //Landscape
@@ -5073,7 +5073,7 @@ ig.module("game.entities.game-control")
                 //Reset positions
 
                 //Dragon Co-ordintates
-                playerX = 70;
+                playerX = 50;
                 playerY = 450;
 
                 playerLX = 100;
