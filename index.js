@@ -3747,7 +3747,7 @@ ig.module("game.entities.buttons.button-card")
                 var b = ig.system.context;
                 b.save();
                 b.translate(this.pos.x + 0.5 * this.image.width * this.scale.x, this.pos.y + 0.5 * this.image.height * this.scale.y - this.adjustY);
-                b.scale(this.scale.x * 1.05 - this.scaleFactor, this.scale.y * 0.90 - this.scaleFactor);
+                b.scale(this.scale.x * 1.15 - this.scaleFactor, this.scale.y * 1.20 - this.scaleFactor);
                 this.image && this.image.draw(-0.5 * this.image.width, -0.5 * this.image.height);
                 b.restore();
             },
@@ -4069,7 +4069,7 @@ ig.module("game.entities.dagame")
             }
         });
 
-       
+
     });
 
 ig.baked = !0;
@@ -4333,9 +4333,6 @@ ig.module("game.entities.game-control")
                     this.drawBG();
                     this.drawCoin();
 
-                    if(collisionTrigger == 1){
-                        this.drawAlert();
-                    }
                     
                     //this.anim1.draw(playerX, playerY);
 
@@ -4346,7 +4343,7 @@ ig.module("game.entities.game-control")
                         this.drawDragon();
                     }
 
-                    if (gameState == 2) {
+                    if (gameState == 2 ) {
                         this.drawGameOver();
                         this.drawLogoEnd();
                     }
@@ -4366,6 +4363,10 @@ ig.module("game.entities.game-control")
                             this.drawScore();
                         }
                     }
+                    if (collisionTrigger == 1) {
+                        this.drawAlert();
+                    }
+
 
 
                 } else {
@@ -4519,28 +4520,65 @@ ig.module("game.entities.game-control")
                 }
             },
 
-            drawAlert: function() {
-                if (MJS.view.viewport.orientation.portrait){
-                    var b = ig.system.context;
-                    b.save();
-                    b.translate(0, 0);
-                    b.scale(0.5, 0.5);
-                    this.imgAlert.draw(0, 0);
-                    b.restore();
-                } else {
-                    var b = ig.system.context;
-                    b.save();
-                    b.translate(0, 0);
-                    b.scale(0.89, 0.28);
-                    this.imgAlert.draw(0, 0);
-                    b.restore();
-                }
+            drawAlert: function () {
                 var b = ig.system.context;
                 b.save();
                 b.translate(-150, 0);
                 b.scale(5, 7);
                 this.imgBlackLayer.draw(0, 0);
                 b.restore();
+
+                if (MJS.view.viewport.orientation.portrait) {
+                    var b = ig.system.context;
+                    b.save();
+                    b.translate(130, 310);
+                    b.scale(1, 1);
+                    this.imgGameOverText.draw(0, 0);
+                    b.restore();
+
+                    b = ig.system.context;
+                    b.save();
+                    b.translate(0, 0);
+                    b.scale(0.5, 0.5);
+                    this.imgAlert.draw(0, 0);
+                    b.restore();
+
+                    // b = ig.system.context;
+                    // b.save();
+                    // //b.translate(100, 100);
+                    // b.textAlign = "center";
+                    // b.textBaseline = "top";
+                    // b.font = "bold 70px arial";
+                    // b.fillStyle = "#d60909";
+                    // b.fillText("YOU DIED!", 280, 340);
+                } else {
+
+                    var b = ig.system.context;
+                    b.save();
+                    b.translate(320, 120);
+                    b.scale(1, 1);
+                    this.imgGameOverText.draw(0, 0);
+                    b.restore();
+
+
+                    b = ig.system.context;
+                    b.save();
+                    b.translate(0, 0);
+                    b.scale(0.89, 0.28);
+                    this.imgAlert.draw(0, 0);
+                    b.restore();
+
+                    // b = ig.system.context;
+                    // b.save();
+                    // //b.translate(100, 100);
+                    // b.textAlign = "center";
+                    // b.textBaseline = "top";
+                    // b.font = "bold 50px arial";
+                    // b.fillStyle = "#FFFFFF";
+                    // b.fillText("YOU DIED!", 450, 200);
+
+                }
+
             },
 
 
@@ -4662,16 +4700,16 @@ ig.module("game.entities.game-control")
                 if (MJS.view.viewport.orientation.portrait) {
                     var b = ig.system.context;
                     b.save();
-                    b.translate(225, 225);
-                    b.scale(0.55, 0.55);
+                    b.translate(195, 185);
+                    b.scale(0.85, 0.85);
                     this.imgLogo.draw(0, 0);
                     b.restore();
                 } else {
 
                     var b = ig.system.context;
                     b.save();
-                    b.translate(440, 70);
-                    b.scale(0.45, 0.45);
+                    b.translate(420, 120);
+                    b.scale(0.75, 0.75);
                     this.imgLogo.draw(0, 0);
                     b.restore();
                 }
@@ -4771,12 +4809,12 @@ ig.module("game.entities.game-control")
                 b.restore();
 
                 if (MJS.view.viewport.orientation.portrait) {
-                    var b = ig.system.context;
-                    b.save();
-                    b.translate(130, 290);
-                    b.scale(1, 1);
-                    this.imgGameOverText.draw(0, 0);
-                    b.restore();
+                    // var b = ig.system.context;
+                    // b.save();
+                    // b.translate(130, 290);
+                    // b.scale(1, 1);
+                    // this.imgGameOverText.draw(0, 0);
+                    // b.restore();
 
                     b = ig.system.context;
                     b.save();
@@ -4784,15 +4822,15 @@ ig.module("game.entities.game-control")
                     b.textBaseline = "top";
                     b.font = "bold 45px arial";
                     b.fillStyle = "#e8a915"
-                    b.fillText(`Score: ${displayScore}`, 270, 150);
+                    b.fillText(`Score: ${displayScore}`, 270, 370);
 
                 } else {
-                    var b = ig.system.context;
-                    b.save();
-                    b.translate(320, 120);
-                    b.scale(1, 1);
-                    this.imgGameOverText.draw(0, 0);
-                    b.restore();
+                    // var b = ig.system.context;
+                    // b.save();
+                    // b.translate(320, 120);
+                    // b.scale(1, 1);
+                    // this.imgGameOverText.draw(0, 0);
+                    // b.restore();
 
                     b = ig.system.context;
                     b.save();
@@ -4800,7 +4838,7 @@ ig.module("game.entities.game-control")
                     b.textBaseline = "top";
                     b.font = "bold 45px arial";
                     b.fillStyle = "#e8a915"
-                    b.fillText(`Score: ${displayScore}`, 470, 300);
+                    b.fillText(`Score: ${displayScore}`, 485, 300);
                 }
                 if (!this.buttonFeed.visible) {
                     this.showButtonFeed();
@@ -4972,17 +5010,20 @@ ig.module("game.entities.game-control")
 
 
             checkTap: function () {
+                
                 if (this.pointer.isFirstPressed && gameState == 0 && deathAnimating == 0) {
+                    console.log(gameState);
                     gameState = 1;
                     if (deathTrigger !== 1) {
                         scoreTrigger = 1;
                         this.updateScore();
-                    }
+                    } 
                     //setTimeout(() => {totalScore += 1}, 1000);
                     // scoreCount = setInterval(()=> {totalScore += 1}, 1000);
 
                 }
-                if (this.pointer.isFirstPressed && (gameState == 1) && (deathTrigger == 1) && deathAnimating == 0) {
+                if (this.pointer.isPressed && (gameState == 1) && (deathTrigger == 1) && deathAnimating == 0) {
+                    //console.log(gameState);
                     gameState = 2;
                     playerY = 450;
                     playerLY = 200;
@@ -5100,7 +5141,9 @@ ig.module("game.entities.game-control")
             // },
 
             resetGame: function () {
-                gameState = 0;
+                if(gameState != 2){
+                    gameState = 0;
+                }
 
                 //Reset positions
 
