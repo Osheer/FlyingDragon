@@ -48,7 +48,7 @@ var spriteSheets = {
         tutorialHand: "Resources/tutorialhand.png",
         gameOverText: "Resources/game-over-txt.png",
         coin: "Resources/coin.png",
-
+        collisionAlert: "Resources/red-alart.png",
     };
 
 //game control variables
@@ -91,6 +91,8 @@ var totalScore = 0;
 
 var scoreTrigger = 0;
 var scoreUpdate;
+
+var collisionTrigger = 0;
 
 //jump variations with number of taps
 //var jumpCount = 0;
@@ -4110,6 +4112,7 @@ ig.module("game.entities.game-control")
             imgTutorialHand: new ig.Image(imagePath.tutorialHand),
             imgGameOverText: new ig.Image(imagePath.gameOverText),
             imgLogo: new ig.Image(imagePath.logo),
+            imgAlert: new ig.Image(imagePath.collisionAlert),
 
             imgCounterIdleCurrent: 3,
             imgCounterIdleMax: 3,
@@ -4329,6 +4332,11 @@ ig.module("game.entities.game-control")
                     this.parent();
                     this.drawBG();
                     this.drawCoin();
+
+                    if(collisionTrigger == 1){
+                        this.drawAlert();
+                    }
+                    
                     //this.anim1.draw(playerX, playerY);
 
                     if (deathAnimating == 1) {
@@ -4509,6 +4517,30 @@ ig.module("game.entities.game-control")
                         b.fillText("TAP TO TRY AGAIN", 450, 200);
                     }
                 }
+            },
+
+            drawAlert: function() {
+                if (MJS.view.viewport.orientation.portrait){
+                    var b = ig.system.context;
+                    b.save();
+                    b.translate(0, 0);
+                    b.scale(0.5, 0.5);
+                    this.imgAlert.draw(0, 0);
+                    b.restore();
+                } else {
+                    var b = ig.system.context;
+                    b.save();
+                    b.translate(0, 0);
+                    b.scale(0.89, 0.28);
+                    this.imgAlert.draw(0, 0);
+                    b.restore();
+                }
+                var b = ig.system.context;
+                b.save();
+                b.translate(-150, 0);
+                b.scale(5, 7);
+                this.imgBlackLayer.draw(0, 0);
+                b.restore();
             },
 
 
@@ -5131,9 +5163,10 @@ ig.module("game.entities.game-control")
 
                     //checking for mountain collision
                     if (playerY2 >= mHeight) {
+                        collisionTrigger = 1;
                         deathTrigger = 1;
                         deathAnimating = 1;
-                        setTimeout(() => { this.resetGame(); deathAnimating = 0 }, 1700);
+                        setTimeout(() => { this.resetGame(); deathAnimating = 0; collisionTrigger = 0 }, 1700);
                         scoreTrigger = 2;
                         this.updateScore();
 
@@ -5153,10 +5186,10 @@ ig.module("game.entities.game-control")
                     if (((playerX2 >= enemyX1) && (playerX2 <= enemyX2)) || ((playerX1 >= enemyX1) && (playerX1 <= enemyX2))) {
                         if (((playerY1 <= enemyY2) && (playerY1 >= enemyY1)) || ((playerY2 >= enemyY1) && (playerY2 <= enemyY2))) {
                             console.log("COLLISION DETECTED");
-
+                            collisionTrigger = 1;
                             deathTrigger = 1;
                             deathAnimating = 1;
-                            setTimeout(() => { this.resetGame(); deathAnimating = 0 }, 1700);
+                            setTimeout(() => { this.resetGame(); deathAnimating = 0; collisionTrigger = 0; }, 1700);
                             //this.resetGame();
                             scoreTrigger = 2;
                             this.updateScore();
@@ -5214,8 +5247,9 @@ ig.module("game.entities.game-control")
                     //checking for mountain collision
                     if (playerY2 >= mHeight) {
                         deathTrigger = 1;
+                        collisionTrigger = 1;
                         deathAnimating = 1;
-                        setTimeout(() => { this.resetGame(); deathAnimating = 0 }, 1700);
+                        setTimeout(() => { this.resetGame(); deathAnimating = 0; collisionTrigger = 0 }, 1700);
                         console.log("Mountain Collision");
                         scoreTrigger = 2;
                         this.updateScore();
@@ -5234,9 +5268,10 @@ ig.module("game.entities.game-control")
                     if (((playerX2 >= enemyX1) && (playerX2 <= enemyX2)) || ((playerX1 >= enemyX1) && (playerX1 <= enemyX2))) {
                         if (((playerY1 <= enemyY2) && (playerY1 >= enemyY1)) || ((playerY2 >= enemyY1) && (playerY2 <= enemyY2))) {
                             console.log("COLLISION DETECTED");
+                            collisionTrigger = 1;
                             deathTrigger = 1;
                             deathAnimating = 1;
-                            setTimeout(() => { this.resetGame(); deathAnimating = 0 }, 1700);
+                            setTimeout(() => { this.resetGame(); deathAnimating = 0; collisionTrigger = 0; }, 1700);
                             scoreTrigger = 2;
                             this.updateScore();
                         }
